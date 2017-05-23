@@ -1,0 +1,135 @@
+#pragma once
+
+#include "detail/config.h"
+#include "detail/http_parser.h"
+#include "content_type.h"
+#include "server_config.h"
+#include <map>
+#include <string>
+#include <cstring>
+#include <fstream>
+
+class url
+{
+    bool operator == (const url & other)
+    {
+    }
+
+    bool operator <(const url & other)
+    {
+
+    }
+
+    std::string url_;
+};
+
+class http_processor
+{
+public:
+    http_processor(const std::string & root)
+	: root_(root)
+        , content_type_(content_type_map)
+    {
+    }
+    
+    std::string get_content_type(const std::string & filename)
+    { 
+        std::string suffix = ".*";
+        for(int i = filename.size(); i >= 0; --i)
+        {
+            if(filename[i] == '.')
+            {
+                 suffix = filename.substr(i);
+                 break;
+            }
+            else if(filename[i] == '\\' || filename[i] == '/')
+            {
+                  break;
+            }
+        }
+        DEBUG() << "suffix: " << filename << ":" << suffix;
+        return content_type_[suffix];
+    }
+
+    template<typename T>
+    void handle_request(T & t, const http_request & request)
+    {
+        DEBUG() << request.method;
+        DEBUG() << request.url;
+        for(auto & i : request.header)
+        {
+            DEBUG() << i.first << " : " << i.second;
+        }
+        DEBUG() << request.body;
+
+        auto result = get_content(request.url);
+        if(!result)
+        {
+            result = std::make_pair<string, string>("text/html", "<html><head><title>Ooops</title></head><body><p>你迷路啦</p></body></html>");
+        }
+
+        std::stringstream ss;
+        ss << "HTTP/1.1 200 OK\r\n"
+              "Connection: Keep-Alive\r\n"
+              //"Connection: close\r\n"
+              "Content-Type: " << result->first << "\r\n"
+              "Content-Length: " << result->second.size()
+           << "\r\n\r\n";
+
+        std::string response = ss.str() + result->second;
+        t->send(response);
+    }
+private:
+    optional<std::pair<string, string> > get_content(const string & url)
+    {
+        optional<std::pair<string, string>> result;
+
+        filesystem::path path(root_);
+        path /= url;
+
+        if(filesystem::is_directory(path))
+        {
+            path /= "index.html";
+        }
+        else if(!filesystem::exists(path))
+        {
+             path += ".html";
+        }
+
+        if(filesystem::is_regular_file(path))
+        {
+            auto iter = cache_.find(path.string());
+            if(iter == cache_.end())
+            {
+                DEBUG() << "cache miss: " << url << ":" << path.string();
+                std::ifstream ifs(path.string(), std::ios_base::binary);
+                if(ifs)
+                {
+                    std::string content_value;
+                    ifs.seekg(0, std::ios::end);
+                    size_t size = ifs.tellg();
+                    ifs.seekg(0, std::ios::beg);
+                    content_value.resize(size);
+                    ifs.read(&content_value[0], content_value.size());
+		    string content_type = get_content_type(path.string());
+		    auto content = std::make_pair<string, string>(move(content_type), move(content_value));
+                    DEBUG() << "cache add: " << url << ":" << path.string() << ":" << content.first << ":" << content.second.size();
+                    cache_[path.string()] = content;
+                    result= move(content);
+                }
+            }
+            else
+            {
+                DEBUG() << "cache hit: " << url << ":" << path.string() << ":" << iter->second.first << ":" << iter->second.second.size();
+                result = iter->second;
+            }
+        }
+
+        return result;
+    }
+
+    string root_;
+    std::map<string, std::pair<string, string> > cache_;
+    std::map<string, string> content_type_;
+};
+

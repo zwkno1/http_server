@@ -1,0 +1,29 @@
+<html>
+<head>
+<script type="text/javascript">
+function on_token_change()
+{
+var token = document.getElementById("token").value.trim();
+var postUrl = "https://api.telegram.org/bot"+ token + "/setWebhook";
+document.getElementById("setWebhook").action = postUrl;
+document.getElementById("postUrl").innerHTML = postUrl;
+}
+</script>
+<title>setWebhook</title>
+</head>
+<body>
+<h2>setWebhook</h2>
+<a href="https://core.telegram.org/bots/api#setwebhook">api document</a>
+<p>token: <input type="text" name="token" id="token" size="80" onchange="on_token_change()" /></p>
+<p id="postUrl">https://api.telegram.org/bot[BOT_TOKEN]/setWebhook</p>
+<hr>
+<form action="ADDR" method="post" enctype="multipart/form-data" id="setWebhook">
+<p>url: <input type="text" name="url" size="100" value=""></p>
+<p>certificate: <input type="file" name="certificate"> </p>     
+<p>max_connections: <input type="text" name="max_connections" value="40"> </p>
+<p>allowed_updates: <input type="text" name="allowed_updates"  value="[]"></p>
+<input type="submit" value="submit" name="submit">
+</form>
+</body>
+</html>
+
