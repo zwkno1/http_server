@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
     try
     {
         asio::io_service service(1);
-        http_server server(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("http_port", 80)));
-        https_server server2(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("https_port", 443)));
+        http_server<http_processor> server(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("http_port", 80)));
+        https_server<http_processor> server2(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("https_port", 443)));
         service.run();
     }
     catch(const error_code& err)
