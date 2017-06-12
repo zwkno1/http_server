@@ -6,7 +6,6 @@ namespace
 {
 
 const std::map<std::string, std::string> content_type_map =
-//const char * content_type_table[][2] =
 {
     { ".*", "application/octet-stream" }, 
     { ".tif", "image/tiff" }, 

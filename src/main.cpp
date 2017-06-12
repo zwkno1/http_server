@@ -1,9 +1,12 @@
 #include <iostream>
+#include <chrono>
 
 #include "server_config.h"
 #include "detail/https_server.h"
 #include "detail/http_server.h"
 #include "http_processor.h"
+#include "session_factory.h"
+#include "detail/uri.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,10 +27,10 @@ int main(int argc, char *argv[])
 
     try
     {
-        asio::io_context context(1);
-        http_server<http_processor> server(processor, context, tcp::endpoint(ip::address_v4::any(), server_config::get("http_port", 80)));
-        https_server<http_processor> server2(processor, context, tcp::endpoint(ip::address_v4::any(), server_config::get("https_port", 443)));
-        context.run();
+        asio::io_service service(1);
+        http_server server(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("http_port", 80)));
+        https_server server2(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("https_port", 443)));
+        service.run();
     }
     catch(const error_code& err)
     {

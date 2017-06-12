@@ -24,10 +24,10 @@ public:
         make_shared<https_session>(*this, socket, context_)->start();
     }
 
-    template<typename Sendable>
-    void handle_request(Sendable & s, http_request & request)
+    template<typename Responesable>
+    void handle_request(http_request & request, Responesable responseable)
     {
-        listener_.handle_request(s, request);
+        listener_.handle_request(request, responseable);
     }
 
 private:

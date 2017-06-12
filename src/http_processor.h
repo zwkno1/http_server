@@ -9,20 +9,6 @@
 #include <cstring>
 #include <fstream>
 
-class url
-{
-    bool operator == (const url & other)
-    {
-    }
-
-    bool operator <(const url & other)
-    {
-
-    }
-
-    std::string url_;
-};
-
 class http_processor
 {
 public:
@@ -51,8 +37,8 @@ public:
         return content_type_[suffix];
     }
 
-    template<typename T>
-    void handle_request(T & t, const http_request & request)
+    template<typename Resposeable>
+    void handle_request(http_request & request, Resposeable & responseable)
     {
         DEBUG() << request.method;
         DEBUG() << request.url;
@@ -68,16 +54,16 @@ public:
             result = std::make_pair<string, string>("text/html", "<html><head><title>Ooops</title></head><body><p>你迷路啦</p></body></html>");
         }
 
-        std::stringstream ss;
-        ss << "HTTP/1.1 200 OK\r\n"
-              "Connection: Keep-Alive\r\n"
-              //"Connection: close\r\n"
-              "Content-Type: " << result->first << "\r\n"
-              "Content-Length: " << result->second.size()
-           << "\r\n\r\n";
+        http_response response;
+        response.status_code = 200;
+        response.version_major = 1;
+        response.version_minor = 1;
+        response.header["Connection"] = "Keep-Alive";
+        response.header["Content-Type"] = result->first;
+        response.header["Content-Length"] = result->second.size();
+        response.body = result->second;
 
-        std::string response = ss.str() + result->second;
-        t->send(response);
+        responseable(response);
     }
 private:
     optional<std::pair<string, string> > get_content(const string & url)
