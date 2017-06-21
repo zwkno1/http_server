@@ -74,11 +74,12 @@ const char * http_status_str(int code)
 std::string to_string(const http_response & response)
 {
     std::stringstream ss;
-    ss << "HTTP/" << response.version_major << "." << response.version_minor << " " << http_status_str(response.status_code) << "\r\n";
+    ss << "HTTP/" << response.version_major << "." << response.version_minor << " " << response.status_code << " " << http_status_str(response.status_code) << "\r\n";
     for(const auto & i : response.header)
     {
         ss << i.first << ":"  << i.second << "\r\n";
     }
+    ss << "\r\n";
     std::string result = ss.str();
     result.append(response.body.data(), response.body.size());
     return result;

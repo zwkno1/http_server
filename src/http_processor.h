@@ -38,7 +38,7 @@ public:
     }
 
     template<typename Resposeable>
-    void handle_request(http_request & request, Resposeable & responseable)
+    void handle_request(http_request & request, Resposeable responseable)
     {
         DEBUG() << request.method;
         DEBUG() << request.url;
