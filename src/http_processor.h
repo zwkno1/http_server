@@ -60,7 +60,7 @@ public:
         response.version_minor = 1;
         response.header["Connection"] = "Keep-Alive";
         response.header["Content-Type"] = result->first;
-        response.header["Content-Length"] = result->second.size();
+        response.header["Content-Length"] = std::to_string(result->second.size());
         response.body = result->second;
 
         responseable(response);
