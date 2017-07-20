@@ -16,6 +16,13 @@ struct http_request
 
 struct http_response
 {
+    http_response()
+    {
+        version_major = 1;
+        version_minor = 1;
+        status_code = 200;
+    }
+
     int version_major;
     int version_minor;
     int status_code;

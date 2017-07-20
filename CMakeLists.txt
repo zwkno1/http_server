@@ -29,6 +29,8 @@ set(SRC_LIST
     src/main.cpp
     src/detail/impl/http_parser.c
     )
+aux_source_directory(src/tgbot SRC_LIST)
+aux_source_directory(src/tgbot/types SRC_LIST)
 
 add_executable(http_server
     ${SRC_LIST}

@@ -52,7 +52,6 @@ public:
         if(!stopped_)
         {
             stopped_ = true;
-
             //close socket, cancel all async operations
             socket_.close();
         }

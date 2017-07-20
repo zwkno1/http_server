@@ -4,7 +4,7 @@
 #include "server_config.h"
 #include "detail/https_server.h"
 #include "detail/http_server.h"
-#include "http_processor.h"
+#include "http_dispatcher.h"
 #include "session_factory.h"
 #include "detail/uri.h"
 
@@ -23,13 +23,13 @@ int main(int argc, char *argv[])
     server_config::set("http_port", argv[5]);
     server_config::set("https_port", argv[6]);
 
-    http_processor processor(server_config::get<std::string>("root", "./"));
+    http_dispatcher dispatcher(server_config::get<std::string>("root", "./"));
 
     try
     {
         asio::io_service service(1);
-        http_server<http_processor> server(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("http_port", 80)));
-        https_server<http_processor> server2(processor, service, tcp::endpoint(ip::address_v4::any(), server_config::get("https_port", 443)));
+        http_server<http_dispatcher> server(dispatcher, service, tcp::endpoint(ip::address_v4::any(), server_config::get("http_port", 80)));
+        https_server<http_dispatcher> server2(dispatcher, service, tcp::endpoint(ip::address_v4::any(), server_config::get("https_port", 443)));
         service.run();
     }
     catch(const error_code& err)
