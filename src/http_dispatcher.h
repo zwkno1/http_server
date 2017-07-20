@@ -14,8 +14,7 @@ public:
     template<typename Resposeable>
     void handle_request(http_request & request, Resposeable & responseable)
     {
-        const char bot_url[] = "/telegram_bot/";
-        if(strncmp(request.url.c_str(), bot_url, sizeof(bot_url) - 1))
+        if(std::equal(bot_path.begin(), bot_path.end(), request.path.begin()))
         {
             bot_processor_.handle_request(request, responseable);
         }
@@ -26,6 +25,8 @@ public:
     }
 
 private:
+    const std::string bot_path = "/telegram_bot/";
+
     bot_processor bot_processor_;
     static_webpage_processor default_processor_;
 };

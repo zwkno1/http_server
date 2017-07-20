@@ -9,7 +9,7 @@ struct http_request
     int version_major;
     int version_minor;
     std::string method;
-    std::string url;
+    std::string path;
     std::map<std::string, std::string> header;
     std::string body;
 };
@@ -131,7 +131,7 @@ public:
                 request.version_major = parser_.http_major;
                 request.version_minor = parser_.http_minor;
                 request.method = http_method_str(http_method(parser_.method));
-                request.url = std::move(url_);
+                request.path = std::move(url_);
                 request.header = std::move(header_);
                 request.body = std::move(body_);
                 request_handler_(request);

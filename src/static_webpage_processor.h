@@ -103,14 +103,14 @@ public:
     void handle_request(http_request & request, Resposeable & responseable)
     {
         DEBUG() << request.method;
-        DEBUG() << request.url;
+        DEBUG() << request.path;
         for(auto & i : request.header)
         {
             DEBUG() << i.first << " : " << i.second;
         }
         DEBUG() << request.body;
 
-        auto result = content_service_.get(request.url);
+        auto result = content_service_.get(request.path);
         if(!result)
         {
             result = std::make_pair<string, string>("text/html", "<html><head><title>Ooops</title></head><body><p>你迷路啦</p></body></html>");
