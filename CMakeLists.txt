@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -g -O2")
 
 find_package(Boost REQUIRED COMPONENTS
-	regex
+    regex
     system
     filesystem
     )
@@ -40,5 +40,6 @@ target_link_libraries(http_server
     ${Boost_LIBRARIES}
     ${OPENSSL_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
+    -lstdc++fs
     )
 

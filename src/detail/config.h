@@ -1,8 +1,13 @@
 #pragma once
 
 #include <memory>
-//#include <optional>
+
+#ifdef USE_BOOST_FILESYSTEM
 #include <boost/filesystem.hpp>
+#else
+#include <experimental/filesystem>
+#endif
+
 #include <boost/optional.hpp>
 
 #include <boost/asio.hpp>
@@ -20,7 +25,13 @@ using std::shared_ptr;
 using std::string;
 
 namespace asio = boost::asio;
+
+#ifdef USE_BOOST_FILESYSTEM
 namespace  filesystem = boost::filesystem;
+#else
+namespace  filesystem = std::experimental::filesystem;
+#endif
+
 namespace ip = asio::ip;
 namespace ssl = asio::ssl;
 using asio::ip::tcp;
